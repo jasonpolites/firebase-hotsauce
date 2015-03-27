@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Hotsauce!</title>
+
+        <script src="js/jquery-1.11.2.min.js"></script>
+        <script src="js/hotsauce.js"></script>
+        <script src="https://cdn.firebase.com/js/client/2.2.3/firebase.js"></script>
+
+        <script>
+
+            var namespace = 'http://sweltering-fire-55.firebaseio.com';
+
+            // Initialize some hotness
+            Hotsauce.init(namespace);
+
+            // Create a new object at the given path
+            var myObj = Hotsauce.extend('/testobjects/');
+
+            myObj['foo'] = 'bar';
+
+            // Save this object
+            myObj.save({
+                "success" : function() {},
+                "error": function (err) {
+                    console.log(err);
+                }
+            });
+
+            // Get a new reference
+            var myObj2 = Hotsauce.extend('/testobjects/');
+
+            // Load this object to verify it all worked
+            myObj2.load({
+                "success" : function() {
+                    console.log('It worked! : ' + this['foo']);
+                },
+                "error": function (err) {
+                    console.log(err);
+                }
+            });
+
+        </script>
+    </head>
+    <body>
+        Check the console for the new hotness!
+    </body>
+</html>
