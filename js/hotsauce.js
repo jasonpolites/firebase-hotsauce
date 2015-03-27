@@ -1,8 +1,6 @@
 var Hotsauce = {
     FirebaseObject : {
-        _isFunc : function(object) {
-            return object && getClass.call(object) == '[object Function]';
-        },
+        _path : null,
         _serialize : function() {
             var val = {};
             for(prop in this) {
@@ -18,29 +16,29 @@ var Hotsauce = {
             }
         },
         save : function(callback) {
-            var that = this;
-            var ref = Hotsauce.fb.child(this._path);
-            ref.set(this._serialize(), function(error) {
+            var self = this;
+            var ref = Hotsauce.fb.child(self._path);
+            ref.set(self._serialize(), function(error) {
                 if(callback) {
                     if(error && callback.error) {
-                        callback.error.call(that, error);
+                        callback.error.call(self, error);
                     } else if(callback.success) {
-                        callback.success.call(that);
+                        callback.success.call(self);
                     }
                 }
             });
         },
         load : function(callback) {
-            var that = this;
-            var ref = Hotsauce.fb.child(this._path);
+            var self = this;
+            var ref = Hotsauce.fb.child(self._path);
             ref.once('value', function(snapshot) {
-                that._deserialize(snapshot.val());
+                self._deserialize(snapshot.val());
                 if(callback && callback.success) {
-                    callback.success.call(that);
+                    callback.success.call(self);
                 }
             }, function (error) {
                 if(callback && error && callback.error) {
-                    callback.error.call(that, error);
+                    callback.error.call(self, error);
                 }
             });
         }
