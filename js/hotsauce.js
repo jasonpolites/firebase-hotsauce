@@ -15,34 +15,47 @@ var Hotsauce = {
                 this[prop] = val[prop];
             }
         },
+        _callback : function(self, callback, error) {
+            if(callback) {
+                if(error && callback.error) {
+                    callback.error.call(self, error);
+                } else if(callback.success) {
+                    callback.success.call(self);
+                }
+            }
+        },
         save : function(callback) {
             var self = this;
             var ref = Hotsauce.fb.child(self._path);
             ref.set(self._serialize(), function(error) {
-                if(callback) {
-                    if(error && callback.error) {
-                        callback.error.call(self, error);
-                    } else if(callback.success) {
-                        callback.success.call(self);
-                    }
-                }
+                self._callback(self, callback, error);
             });
         },
         load : function(callback) {
             var self = this;
             var ref = Hotsauce.fb.child(self._path);
             ref.once('value', function(snapshot) {
-                self._deserialize(snapshot.val());
-                if(callback && callback.success) {
-                    callback.success.call(self);
+
+                var val = snapshot.val();
+
+                if(val === null) {
+                    self._callback(self, callback, 'No such object');
+                } else {
+                    self._deserialize(snapshot.val());
+                    self._callback(self, callback);
                 }
+
             }, function (error) {
-                if(callback && error && callback.error) {
-                    callback.error.call(self, error);
-                }
+                self._callback(self, callback, error);
+            });
+        },
+        destroy : function(callback) {
+            var self = this;
+            var ref = Hotsauce.fb.child(self._path);
+            ref.set(null, function(error) {
+                self._callback(self, callback, error);
             });
         }
-
     },
     extend : function(path) {
         var obj = {};

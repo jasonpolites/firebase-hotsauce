@@ -12,40 +12,81 @@
 
         <script>
 
-            var namespace = '<YOUR FIREBASE URL: eg: http://myfirebase.firebaseio.com>';
+            $( document ).ready(function() {
 
-            // Initialize some hotness
-            Hotsauce.init(namespace);
+                var namespace = 'https://sweltering-fire-55.firebaseio.com';
+                var path = 'test';
 
-            // Create a new object at the given path
-            var myObj = Hotsauce.extend('/testobjects/');
+                // Initialize some hotness
+                Hotsauce.init(namespace);
 
-            myObj['foo'] = 'bar';
+                $('#save').click(save);
+                $('#load').click(load);
+                $('#destroy').click(destroy);
 
-            // Save this object
-            myObj.save({
-                "success" : function() {},
-                "error": function (err) {
-                    console.log(err);
+                function save() {
+                    $('#save').prop("disabled",true);
+                    var obj = Hotsauce.extend('/testobjects/');
+                    obj['foo'] = $('#a').val();
+                    obj.save({
+                        "success" : function() {
+                            $('#save').prop("disabled",false);
+                        },
+                        "error" : function(error) {
+                            $('#save').prop("disabled",false);
+                            alert(error);
+                        }
+                    });
+                    return false;
                 }
-            });
 
-            // Get a new reference
-            var myObj2 = Hotsauce.extend('/testobjects/');
+                function load() {
+                    $('#load').prop("disabled",true);
+                    var obj = Hotsauce.extend('/testobjects/');
+                    obj.load({
+                        "success" : function() {
+                            $('#load').prop("disabled",false);
+                            $('#b').val(this['foo']);
+                        },
+                        "error" : function(error) {
+                            $('#load').prop("disabled",false);
+                            alert(error);
+                        }
+                    });
+                    return false;
+                }
 
-            // Load this object to verify it all worked
-            myObj2.load({
-                "success" : function() {
-                    console.log('It worked! : ' + this['foo']);
-                },
-                "error": function (err) {
-                    console.log(err);
+                function destroy() {
+                    $('#destroy').prop("disabled",true);
+                    var obj = Hotsauce.extend('/testobjects/');
+                    obj.destroy({
+                        "success" : function() {
+                            $('#destroy').prop("disabled",false);
+                            $('#a').val('');
+                            $('#b').val('');
+                        },
+                        "error" : function(error) {
+                            $('#load').prop("disabled",false);
+                            alert(error);
+                        }
+                    });
+                    return false;
                 }
             });
 
         </script>
     </head>
     <body>
-        Check the console for the new hotness!
+        <form>
+            <label for="a">A</label>
+            <input id="a"/>
+            <p/>
+            <label for="b">B</label>
+            <input id="b"/>
+            <p/>
+            <button id="save">Save value from A</button>
+            <button id="load">Load value to B</button>
+            <button id="destroy">Destroy</button>
+        </form>
     </body>
 </html>
